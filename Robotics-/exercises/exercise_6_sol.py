@@ -93,7 +93,7 @@ def program(d, m): #
     #model (m) : geometry of staic world such as robot, table, objetcs, walls)
     # data (d) : current state of world such as articular positon, speed, contacts
     # Define our robot object
-    name =input("Wich object do you want betwteen the followed: box, cylinder, t_block")
+    name_obj =input("Wich object do you want betwteen the followed: box, cylinder, t_block: ")
     robot = UR5robot(data=d, model=m)
     
     start_q = robot.get_current_q()

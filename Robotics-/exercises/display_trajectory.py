@@ -10,13 +10,13 @@ You can change the joint in the line joint_0 = np.array(data[:,4]) to select the
  --- Output: None 
 """
 
-def display(data, name_obj):
+def display(data, name_obj, method):
 
     joint_0 = data[:,0] # select the first joint 
 
     # Plot trajectory profile of joint 0
     fig, axs = plt.subplots(4)
-    fig.suptitle('Trajectory profiles of joint 0' + name_obj)
+    fig.suptitle('Trajectory profiles of joint 0' + name_obj + "with" + method)
 
     vel = np.diff(joint_0)
     acc = np.diff(vel)
@@ -32,11 +32,11 @@ def display(data, name_obj):
     axs[2].set_ylabel("Accelaration")
     axs[3].set_ylabel("Jerk")
 
-    plt.savefig("./media/trajectory.pdf", format='pdf')
+    plt.savefig("./media/trajectory"+method+".pdf", format='pdf')
 
     # plot position of all joints
     fig, axs1 = plt.subplots(3)
-    fig.suptitle('Trajectory joint profiles of' + name_obj)
+    fig.suptitle('Trajectory joint profiles of' + name_obj + "with" +method)
     joint_name = ["soulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"]
     for i in range(3):
         axs1[i].plot(data[:,i], label=joint_name[i])
@@ -44,16 +44,16 @@ def display(data, name_obj):
         axs1[i].set_xlabel("Time [s]")
         axs1[i].grid(True)
         axs1[i].legend()
-    plt.savefig("./media/joint_trajectory1.pdf", format='pdf')
+    plt.savefig("./media/joint_trajectory1"+method+".pdf", format='pdf')
 
     fig, axs2 = plt.subplots(3)
-    fig.suptitle('Trajectory joint profiles' + name_obj)
+    fig.suptitle('Trajectory joint profiles' + name_obj + "with" +method)
     for j in range(3):
         axs2[j].plot(data[:,j+3], label=joint_name[j+3])
         axs2[j].set_ylabel("Joint" +str(j+3) + "Position [rd]")
         axs2[j].grid(True)
         axs2[j].set_xlabel("Time [s]")
         axs2[j].legend()
-    plt.savefig("./media/joint_trajectory2.pdf", format='pdf')
+    plt.savefig("./media/joint_trajectory2"+method+".pdf", format='pdf')
     return 
 

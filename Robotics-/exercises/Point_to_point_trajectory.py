@@ -131,7 +131,7 @@ def drop_object(robot, name_obj, q_order, drop_frame):
 
         drop_frame = drop_frame * sm.SE3.Rx(PI/2) 
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0] # add height for cylinder
-        q_order.append(goal_q)
+        #q_order.append(goal_q)
 
         # drop_frame = drop_frame * sm.SE3.Tx(0.2)
         # goal_q = robot.robot_ur5.ik_LM(Tep= drop_frame, )
@@ -144,7 +144,6 @@ def drop_object(robot, name_obj, q_order, drop_frame):
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0]
         q_order.append(goal_q)
 
-
     trapezoidal(robot, q_order)
     #robot.set_gripper(0) # open gripper to drop
     q_order = [goal_q]
@@ -155,10 +154,9 @@ def program(d, m):
     # object slection 
     name_obj = input("Enter the object to manipulate between: cylinder_side, cylinder_top, box, t_block:")
 
-    # Case when we write wrong the name 
+    # # Case when we write wrong the name 
     if name_obj not in ["cylinder_side", "cylinder_top", "box", "t_block"]:
         raise Exception("Please check the name of object selected") 
-
     # print(type(name_obj))
     # generate robot
     robot = UR5robot(data=d, model=m)
@@ -241,7 +239,7 @@ def program(d, m):
  
     data = [q_pose for q_pose, _ in robot.queue] # one joint value to plot # data is a list of numpy arrays
     data = np.array(data)  # Convert list to numpy array for easier indexing
-    display(data, name_obj)
+    display(data, name_obj, method="PIP_trapezoidal")
 
     return robot.queue
        

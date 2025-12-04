@@ -27,9 +27,10 @@ from PIL import Image
 from robot import *
 from cam import *
 
-#from exercises.exercise_1 import program
-from exercises.Point_to_point_trajectory import program
+#from exercises.exercise_6_sol import program
+#from exercises.Point_to_point_trajectory import program
 #from exercises.Point_to_point_trapezoidal_trajectory import program
+from exercises.RRT_trajectory import program
 #from exercises.RRT_trajectory import program 
 
 # Supporting: Ubuntu 22-24, python 3.10 

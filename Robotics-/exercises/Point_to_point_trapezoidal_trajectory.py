@@ -213,7 +213,7 @@ def program(d, m):
     goal_q = robot.robot_ur5.ik_LM(Tep=close_drop_frame, q0=goal_q)[0]
     q_order.append(goal_q)
 
-    trapezoidal(robot, q_order)
+    trapezoidal_trajectory(robot, q_order)
     q_order = [goal_q]
 
     # return to start position 
@@ -226,7 +226,7 @@ def program(d, m):
     q_order.append(goal_q)
     q_order.append(start_q)
 
-    trapezoidal(robot, q_order)
+    trapezoidal_trajectory(robot, q_order)
     
 
     # # Check if there is any singularity in the trajectory created 
