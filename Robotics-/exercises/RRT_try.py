@@ -74,32 +74,6 @@ def plan(d, m, start_q, goal_q):
         return solution_trajectory
 
 
-def pick_object(m, d, name_obj, robot, start_q):
-    obj_frame = get_mjobj_frame(model=m, data=d, obj_name=name_obj) * sm.SE3.Rx(-PI)
-    if name_obj =="box":
-        print("box selected")
-        close_obj_frame = obj_frame * sm.SE3.Tz(-0.2) 
-        goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= start_q)[0]
-    elif name_obj =="t_block":
-        print("tblock selected")
-        goal_q = 0
-    else:
-        print("cylinnder selected")
-        goal_q = 0
-    return obj_frame, close_obj_frame, goal_q
-
-
-def drop_object(m, d, name_obj, robot, opposite_start_q):
-    drop_frame = get_mjobj_frame(model=m, data=d, obj_name="zone_drop")* sm.SE3.Rx(-PI) * sm.SE3.Tz(-0.05)
-    if name_obj == "cylinder":
-        print("cylinder_selected")
-
-    else:
-        print("box or t_clock dropped")
-        goal_q = 0
-    return drop_frame, goal_q
-
-
 def program(d,m):
     robot = UR5robot(data=d, model=m)
     # object slection 
@@ -117,21 +91,24 @@ def program(d,m):
     start_frame = robot.get_current_tcp() *sm.SE3.Rx(-PI) 
     print("TCP", start_frame)
 
-    obj_frame, close_obj_frame, goal_q = pick_object(m=m, d=d, name_obj=name_obj, robot=robot, start_q=start_q)
-    # go closer 20 cm above to avoid the cylinder
+    obj_frame = get_mjobj_frame(model=m, data=d, obj_name=name_obj) * sm.SE3.Rx(-PI) 
+    close_obj_frame = get_mjobj_frame(model=m, data=d, obj_name=name_obj) * sm.SE3.Tz(-0.2)
+
     goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= start_q)[0]
     trajectory = plan(d=d, m=m, start_q=start_q, goal_q=goal_q)
     robot.move_j_via(points=trajectory, t=600)
-
-    # get to grasp it
-    real_q = goal_q 
+    
+    real_q = goal_q
     goal_q = robot.robot_ur5.ik_LM(Tep=obj_frame, q0= real_q)[0]
     trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
     robot.move_j_via(points=trajectory, t=600)
 
-    # grasp it 
     real_q = goal_q
-    robot.set_gripper(value=255,t=100)  
+    goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= real_q)[0]
+    trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
+    robot.move_j_via(points=trajectory, t=600)
+
+
 
     # # go closer 20 cm above to avoid the cylinder
     # goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= real_q)[0]

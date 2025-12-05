@@ -29,16 +29,17 @@ from cam import *
 
 #from exercises.exercise_6_sol import program
 #from exercises.Point_to_point_trajectory import program
-#from exercises.Point_to_point_trapezoidal_trajectory import program
-from exercises.RRT_trajectory import program
-#from exercises.RRT_trajectory import program 
+from exercises.Point_to_point_trapezoidal_trajectory import program
+#from exercises.RRT_trajectory import program
+#from exercises.RRT_try import program
+
+
 
 # Supporting: Ubuntu 22-24, python 3.10 
 
 if __name__ == "__main__":
     # Initialize OpenGL context first
     # mj.GLContext(max_width=1280, max_height=720)  # Adjust size as needed
-    
 
     model_path ="scene_final.xml"
     

@@ -59,7 +59,7 @@ def pick_object(m, d, robot, name_obj, start_q):
         obj_frame = get_mjobj_frame(model=m, data=d, obj_name="t_block") * sm.SE3.Rx(-PI) 
         print("obj_frame=",obj_frame)
 
-        close_frame = obj_frame * sm.SE3.Tz(-0.2)  # 10 cm above
+        close_frame = obj_frame * sm.SE3.Tz(-0.2)  # 20 cm above
         goal_q = robot.robot_ur5.ik_LM(Tep=close_frame, q0=start_q)[0]
         q_order.append(goal_q)
     
@@ -116,7 +116,6 @@ def drop_object(robot, name_obj, q_order, drop_frame):
     if name_obj == "cylinder_top":
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame *  sm.SE3.Tz(-0.125), q0=goal_q)[0] # add height for cylinder
         q_order.append(goal_q)
-
     
     elif name_obj == "cylinder_side":
         print("chose")

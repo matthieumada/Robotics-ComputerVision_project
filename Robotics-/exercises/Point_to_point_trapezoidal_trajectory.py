@@ -246,7 +246,7 @@ def program(d, m):
  
     data = [q_pose for q_pose, _ in robot.queue] # one joint value to plot # data is a list of numpy arrays
     data = np.array(data)  # Convert list to numpy array for easier indexing
-    display(data, name_obj)
+    display(data, name_obj, method="PIP trapez")
 
     return robot.queue
        
