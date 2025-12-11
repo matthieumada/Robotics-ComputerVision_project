@@ -8,8 +8,8 @@ def display_removal(preserved_points, removed_points):
     preserved_points.paint_uniform_color([0.8, 0.8, 0.8])# Show preserved points in gray
     o3d.visualization.draw_geometries([removed_points, preserved_points])
 
-def voxel_grid(input_cloud): # voxel size >1 remove point and voxel size<1 keep points) 
-    voxel_down_cloud = input_cloud.voxel_down_sample(voxel_size=0.01) 
+def voxel_grid(input_cloud,size): # voxel size >1 remove point and voxel size<1 keep points) 
+    voxel_down_cloud = input_cloud.voxel_down_sample(voxel_size=size) 
 
     return voxel_down_cloud
 
@@ -24,8 +24,8 @@ def spatial_filter(input_cloud):
     max = pts.max(axis=0)
     print("min:",min)
     print("max:",max)
-    passthrough = input_cloud.crop(o3d.geometry.AxisAlignedBoundingBox(min_bound=(-0.70, -0.3, 0.9),
-                                                                       max_bound=(0.70, 0.5, 1.4)))
+    passthrough = input_cloud.crop(o3d.geometry.AxisAlignedBoundingBox(min_bound=(-0.70, -0.3, 0.86),
+                                                                       max_bound=(0.70, 0.5, 1.19)))
     #display_removal(passthrough, input_cloud)
     return passthrough
 
@@ -38,8 +38,8 @@ def main():
 
     #print("PointCloud before filtering: {} data points".format(cloud.points.shape[0]))
     print("PointCloud before filtering: {} data points".format(len(cloud.points)))
-
-    cloud_filtered = voxel_grid(cloud)
+    size = 0.01
+    cloud_filtered = voxel_grid(cloud, size)
     cloud_filtered = outlier_removal(cloud_filtered)
     cloud_filtered = spatial_filter(cloud_filtered)
 

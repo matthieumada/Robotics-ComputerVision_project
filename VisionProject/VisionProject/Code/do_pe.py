@@ -4,9 +4,13 @@ import numpy as np
 from tqdm import tqdm
 import random
 
+
+
 # Function from exercice 5 and 6 of Erik and comleted by me
 from preprocessing_open3d import spatial_filter, outlier_removal, voxel_grid # exercice 5
 from uncertainty import  add_noise # exercice 6
+from ex3_pose_est_realdata_template import ICP, RANSAC # exercice 7: Note that the main of the function ex3 doesn't work yet
+
 
 def do_pose_estimation(scene_pointcloud, object_pointcloud):
     print("YOU NEED TO IMPLEMENT THIS!")
@@ -22,16 +26,40 @@ def do_pose_estimation(scene_pointcloud, object_pointcloud):
     # sampling 
     # remove the back feet of the table useless data because the duck is only on the table
     scene_filtered = spatial_filter(scene_pointcloud)
-
+    print("Spatial -> nombre de points:", len(scene_pointcloud.points),"--->", len(scene_filtered.points))
+    print("scene filtering:", len(scene_pointcloud.points),"Spatial--->", len(scene_filtered.points))
     # remove outliers as the name 
     scene_filtered = outlier_removal(scene_filtered)
 
-    # downsamping  to accelerate the eprocess (less point)
-    #scene_filtered = voxel_grid(scene_filtered)
+    # downsampling  to accelerate the process (less point) ans assume the object doesn't have outliers
+    scn_filtered = voxel_grid(scene_filtered, size=0.007)
+    print("scene filtering with outliers:", len(scene_filtered.points),"Voxel-->", len(scn_filtered.points))
 
-    
-    
-    o3d.visualization.draw_geometries([scene_filtered], window_name = 'Pointcloud after filtering')
+    #obj_filtered = voxel_grid(object_pointcloud)
+    obj_filtered = voxel_grid(object_pointcloud, size=0.01)
+    print("object filtering:", len(object_pointcloud.points),"Voxel--->", len(obj_filtered.points))
+    o3d.visualization.draw_geometries([obj_filtered, scn_filtered], window_name = 'Pointcloud after filtering')
 
+    print("Now that we filter the objetc and the scene time for --> Pose Estimation")
+    # use global pose estimation to an approximativ position 
+    obj, scn, pose_Ransac = RANSAC(obj=obj_filtered, scn=scn_filtered, it=2000, thressq=0.005**2 )
+    o3d.visualization.draw_geometries([obj, scn], window_name = 'Pointcloud after global pose estimation')
+    print("Transformation from RANSAC:", pose_Ransac )
 
-    return np.identity(4)
+    # resampling for IC to have less point and ensure convergence
+    print("Second sampling of object", len(obj.points))
+    print("Second sampling of oscene", len(scn.points))
+
+    # use local pose estimation to increase accuracy 
+    obj, scn, pose_ICP  = ICP(obj=obj, scn=scn, it=100, thressq=0.016)
+    print("Transformation from ICP:", pose_ICP )
+    # ICP for local pose estimation
+    o3d.visualization.draw_geometries([obj, scn], window_name = 'Pointcloud after local pose estimation')
+
+    obj = voxel_grid(obj, size=0.007)
+    scn = voxel_grid(scn, size=0.007)
+    # resampling for IC to have less point and ensure convergence
+    obj, scn, pose_ICP  = ICP(obj=obj, scn=scn, it=190, thressq=0.01)
+    # pose_ICP = np.identity(4)
+    return pose_ICP @ pose_Ransac
+    #return np.identity(4)

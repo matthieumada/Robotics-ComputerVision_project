@@ -85,7 +85,7 @@ def pick_object(m, d, robot, name_obj, start_q):
         goal_q = robot.robot_ur5.ik_LM(Tep=close_frame, q0=start_q)[0]
         q_order.append(goal_q)
     
-        # move closer to catch the box
+        # move closer to catch the cylinder
         goal_q = robot.robot_ur5.ik_LM(Tep=obj_frame *sm.SE3.Tz(-0.05) , q0=goal_q)[0]
         q_order.append(goal_q)
     
@@ -144,7 +144,7 @@ def drop_object(robot, name_obj, q_order, drop_frame):
         # q_order.append(goal_q)
         
     else:
-        print("not chose")
+        print("box and t_block")
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0]
         q_order.append(goal_q)
 

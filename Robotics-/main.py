@@ -19,7 +19,6 @@ import matplotlib
 matplotlib.use('Agg')  # Use a non-interactive backend
 
 import matplotlib.pyplot as plt
-import numpy as np
 from typing import List
 import roboticstoolbox as rtb
 from PIL import Image
@@ -27,6 +26,7 @@ from PIL import Image
 from robot import *
 from cam import *
 
+#from exercises.exercise_1 import program
 #from exercises.exercise_6_sol import program
 #from exercises.Point_to_point_trajectory import program
 from exercises.Point_to_point_trapezoidal_trajectory import program

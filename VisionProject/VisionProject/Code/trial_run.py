@@ -11,7 +11,7 @@ import do_pe
 import helpers
 import settings
 
-scene_id = settings.indexes[1]
+scene_id = settings.indexes[0]
 noise_level = settings.noise_levels[0]
 
 def main():
@@ -40,13 +40,17 @@ def main():
 
     # Error between the solution and mine 
     print("Error")
-    print(helpers.computeError(ground_truth,estimated_pose))
+    error_angle, error_pos = helpers.computeError(ground_truth,estimated_pose)
+    print("Position error=", error_pos, "Angle Error=", error_angle)
  
     object_pointcloud.colors = o3d.utility.Vector3dVector(np.zeros_like(object_pointcloud.points) + [0,255,0])
     # display the results 
-    # o3d.visualization.draw_geometries([copy.deepcopy(object_pointcloud).transform(estimated_pose), scene_pointcloud_noisy], window_name='Final alignment')
+    o3d.visualization.draw_geometries([copy.deepcopy(object_pointcloud).transform(estimated_pose), scene_pointcloud_noisy], window_name='Final alignment')
 
-    # o3d.visualization.draw_geometries([copy.deepcopy(object_pointcloud).transform(ground_truth), scene_pointcloud_noisy], window_name='Perfect alignment')
-
+    o3d.visualization.draw_geometries([copy.deepcopy(object_pointcloud).transform(ground_truth), scene_pointcloud_noisy], window_name='Perfect alignment')
+    if error_angle > 5 or  error_pos>5:
+        print("Failure boy change something for position index",scene_id)
+    else:
+        print("Success type shit")
 if __name__ == "__main__":
     main()
