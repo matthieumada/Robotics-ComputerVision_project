@@ -24,7 +24,7 @@ def create_kdtree(scn):
 
 def estimate_transformation(obj, scn, corr):
     # 2) Estimate transformation
-    est = o3d.pipelines.registration.TransformationEstimationPointToPoint()
+    est= o3d.pipelines.registration.TransformationEstimationPointToPoint()
     T = est.compute_transformation(obj, scn, corr)
     return T
 

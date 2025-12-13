@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
 import os
-
 import open3d as o3d
 import numpy as np
 import copy
-
 
 from do_pe import do_pose_estimation
 import helpers
 import settings
 
-scene_id = settings.indexes[0]
+scene_id = settings.indexes[1]
 noise_level = settings.noise_levels[0]
 
 def main():
@@ -52,5 +50,6 @@ def main():
         print("Failure boy change something for position index",scene_id)
     else:
         print("Success type shit")
+
 if __name__ == "__main__":
     main()

@@ -4,7 +4,9 @@ from tqdm import tqdm
 import random
 
 
-""" Ransac set of function """
+""" Ransac set of function  
+This set of funcition compuet the Ransac algorithm. The function are from the exercice 7 of Computer Vision. The author of the template is Erik and I implement all functionn
+"""
 
 def compute_shape_features(obj, scn):
     obj_features = o3d.pipelines.registration.compute_fpfh_feature(obj, search_param=o3d.geometry.KDTreeSearchParamRadius(0.05))
