@@ -24,8 +24,8 @@ def spatial_filter(input_cloud):
     max = pts.max(axis=0)
     print("min:",min)
     print("max:",max)
-    passthrough = input_cloud.crop(o3d.geometry.AxisAlignedBoundingBox(min_bound=(-0.70, -0.3, 0.86),
-                                                                       max_bound=(0.70, 0.5, 1.19)))
+    passthrough = input_cloud.crop(o3d.geometry.AxisAlignedBoundingBox(min_bound=(-0.7, -0.7, 0.78),
+                                                                       max_bound=(0.7, -0.07, 1.01)))
     #display_removal(passthrough, input_cloud)
     return passthrough
 

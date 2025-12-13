@@ -7,7 +7,7 @@ import numpy as np
 import copy
 
 
-import do_pe
+from do_pe import do_pose_estimation
 import helpers
 import settings
 
@@ -29,7 +29,7 @@ def main():
     o3d.visualization.draw_geometries([object_pointcloud, scene_pointcloud_noisy], window_name='Pre alignment')
     
     # my function 
-    estimated_pose = do_pe.do_pose_estimation(scene_pointcloud_noisy, object_pointcloud)
+    estimated_pose = do_pose_estimation(scene_pointcloud_noisy, object_pointcloud)
     print("Final pose")
     print (estimated_pose)
 

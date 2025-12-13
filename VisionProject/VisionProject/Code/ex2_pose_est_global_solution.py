@@ -21,8 +21,8 @@ def set_RANSAC_parameters():
     return it, thressq
 
 def compute_surface_normals(obj, scn):
-    obj.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(10))
-    scn.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(10))
+    obj.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(30))
+    scn.estimate_normals(search_param=o3d.geometry.KDTreeSearchParamKNN(30))
     return
 
 def compute_shape_features(obj, scn):
