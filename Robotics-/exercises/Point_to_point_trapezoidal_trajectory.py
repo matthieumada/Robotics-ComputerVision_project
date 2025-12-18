@@ -16,13 +16,6 @@ PI = np.pi
 Build a Point to point Inteprpolator with a trapezoidal velocity
 By using the advice, I will select 8 points to inteporlate to fulfill the pick and place task. After come back to the initial position. 
 
-The whole template is from Wilbert with the asset folder, main.py, robot.py camp.py)
-All the Python function used in exercise folder are either from mine or from Wilbert Peter Empleo 
-Of course, I added some change to some  Wilbert's function 
-
-The scene_final.xml is a modified verison of scene_obstacle.xml given by Wilbert for the exercise 6. I only changed the size 
-of the drip zone and the position of the cylinder and the box to fit with picture given in the instruction. I could have change the size of the obstacles 
-but I prefered to keep them as they are.
 """
 
 def trapezoidal_trajectory(robot, via_q):
@@ -90,7 +83,7 @@ def pick_object(m, d, robot, name_obj, start_q):
         q_order.append(goal_q)
     
     else:
-        # version grasping on the side
+        # version grasping cylinder on the side
         start_frame = robot.get_current_tcp() *sm.SE3.Rx(-PI)
         obj_frame = start_frame * sm.SE3.Ry(-PI/2)
         goal_q = robot.robot_ur5.ik_LM(Tep=obj_frame, q0=start_q)[0]
@@ -122,33 +115,31 @@ def drop_object(robot, name_obj, q_order, drop_frame):
         q_order.append(goal_q)
 
     
-    elif name_obj == "cylinder_side":
-        print("chose")
-        # drop_frame = drop_frame * sm.SE3.Rx(PI/2)
-        # print(robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q))
-        # goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0]
-        # q_order.append(goal_q)
+    # elif name_obj == "cylinder_side":
+    #     print("chose")
+    #     # drop_frame = drop_frame * sm.SE3.Rx(PI/2)
+    #     # print(robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q))
+    #     # goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0]
+    #     # q_order.append(goal_q)
         
-        drop_frame = drop_frame *sm.SE3.Tz(-0.3) * sm.SE3.Ry(-PI/2) 
-        goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0] # add height for cylinder
-        q_order.append(goal_q)
+    #     drop_frame = drop_frame *sm.SE3.Tz(-0.3) * sm.SE3.Ry(-PI/2) 
+    #     goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0] # add height for cylinder
+    #     q_order.append(goal_q)
 
-        drop_frame = drop_frame * sm.SE3.Rx(PI/2) 
-        goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0] # add height for cylinder
-        q_order.append(goal_q)
+    #     drop_frame = drop_frame * sm.SE3.Rx(PI/2) 
+    #     goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0] # add height for cylinder
+    #     q_order.append(goal_q)
 
-        # drop_frame = drop_frame * sm.SE3.Tx(0.2)
-        # goal_q = robot.robot_ur5.ik_LM(Tep= drop_frame, )
+    #     # drop_frame = drop_frame * sm.SE3.Tx(0.2)
+    #     # goal_q = robot.robot_ur5.ik_LM(Tep= drop_frame, )
 
-        # goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame *  sm.SE3.Tz(-0.225), q0=goal_q)[0] # add height for cylinder
-        # q_order.append(goal_q)
+    #     # goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame *  sm.SE3.Tz(-0.225), q0=goal_q)[0] # add height for cylinder
+    #     # q_order.append(goal_q)
         
     else:
         print("box and t_block")
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=goal_q)[0]
         q_order.append(goal_q)
-
-
     trapezoidal_trajectory(robot, q_order)
     robot.set_gripper(0) # open gripper to drop
     q_order = [goal_q]

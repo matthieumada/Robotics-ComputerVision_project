@@ -4,6 +4,9 @@ import roboticstoolbox as rtb
 import numpy as np
 from spatialmath.base import trinterp, trnorm
 
+""" 
+Class of robot made by Wilbert Peter empleo
+"""
 
 def ur_ctrl_qpos(data, q_desired):
      assert len(q_desired) == 6, "Expected 6 joint positions for UR robot"

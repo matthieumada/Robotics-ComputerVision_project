@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np 
 
 """ 
+Author:DELIN Matthieu 
 This file is use to print the position, velocity, acceleration and jerk from all joints for both method"
 You can change the joint in the line joint_0 = np.array(data[:,4]) to select the joint you want to plot
  display

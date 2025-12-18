@@ -54,7 +54,6 @@ def do_pose_estimation(scene_pointcloud, object_pointcloud):
     # ICP for local pose estimation
     #o3d.visualization.draw_geometries([obj, scn], window_name = 'Pointcloud after local pose estimation')
 
-
     #obj = voxel_grid(obj, size=0.003)
     scn = voxel_grid(scn, size=0.003)
     print("Second voxel: object size=", len(obj.points), "scene size=", len(scn.points))

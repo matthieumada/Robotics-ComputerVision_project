@@ -5,7 +5,8 @@ import random
 
 
 """ Ransac set of function  
-This set of funcition compuet the Ransac algorithm. The function are from the exercice 7 of Computer Vision. The author of the template is Erik and I implement all functionn
+This set of function compuet the Ransac algorithm. The function are from the exercice 6 of Computer Vision. The author of the template is Erik Diniz Costa Lopes Lindbyand
+
 """
 
 def compute_shape_features(obj, scn):

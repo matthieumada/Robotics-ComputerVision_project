@@ -10,6 +10,9 @@ from ompl import geometric as og
 
 from robot import *
 
+"""
+Exercice 7 takne from exercice. he Template is from Wilbert Peter Empleo. 
+The function path_prune_simple, path_prune_dynamic and browse are made by me"""
 
 class StateValidator:
     def __init__(self, d, m, num_joint):

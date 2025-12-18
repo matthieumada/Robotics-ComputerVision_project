@@ -4,7 +4,7 @@ from tqdm import tqdm
 import random
 
 """ 
-ICP set of function  useful to use it 
+ICP set of function  useful to use it. The function are from Erik Diniz Costa Lopes Lindby template and customize by me. 
 """ 
 
 def update_result_pose_ICP(pose, T):

@@ -2,6 +2,8 @@ import open3d as o3d
 import numpy as np
 from tqdm import tqdm
 
+# This function is a template from Erik Diniz Costa Lopes Lindby and I customize for my need. 
+
 # This function just displays the effect of one of the functions visually, feel free to ignore or remove it.
 def display_removal(preserved_points, removed_points):
     removed_points.paint_uniform_color([1, 0, 0])        # Show removed points in red

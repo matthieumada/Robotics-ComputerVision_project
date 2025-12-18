@@ -11,6 +11,7 @@ from ompl import geometric as og
 from robot import *
 
 # exercie from Wilbert Peter 
+
 class StateValidator:
     # This is mujoco specific, so I have implemented this for you
     def __init__(self, d, m, num_joint):

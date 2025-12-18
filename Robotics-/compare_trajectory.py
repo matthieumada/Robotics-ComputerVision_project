@@ -37,7 +37,8 @@ from exercises.RRT_trajectory import program as RR
 PI = np.pi
 
 """ 
-File to compare both trajectory on a single plot 
+Author:DELIN Matthieu 
+File to compare both methods on their trajectory, speed, acceleration and forward kinematics. The reuslt are saved in PDF isnide the folder media. 
 """
 
 if __name__ == "__main__":
@@ -60,59 +61,138 @@ if __name__ == "__main__":
         while time.time() - sim_start < 3.0:
             mujoco.mj_step(m, d)
             viewer.sync()
-
     data_trapez= Trapez(d=d, m=m)
     trapez_tra= np.array([q_pose for q_pose, _ in data_trapez])
 
     data_RRT = RR(d=d, m=m)
     RRT_tra = np.array([q_pose for q_pose, _ in data_RRT])
+    
+    T_tra = np.linspace(0,0.002*np.shape(trapez_tra)[0],np.shape(trapez_tra)[0])
+    T_RRT = np.linspace(0,0.002*np.shape(RRT_tra)[0],np.shape(RRT_tra)[0])
 
-    joint_0_trapez = trapez_tra[:,0] # select the first joint 
-    joint_0_RRT = RRT_tra[:,0]
-
-    # Plot trajectory profile of joint 0
-    fig, axs = plt.subplots(4)
-    fig.suptitle('Trajectory profiles of joint 0')
-
-    # trapez
-    vel_trapez = np.diff(joint_0_trapez)
-    acc_trapez = np.diff(vel_trapez)
-    jerk_trapez = np.diff(acc_trapez)
-
-    # RRT
-    vel_RRT = np.diff(joint_0_RRT)
-    acc_RRT = np.diff(vel_RRT)
-    jerk_RRT = np.diff(acc_RRT)
-
-    axs[0].plot(joint_0_trapez, label="Trapez traj")
-    axs[0].plot(joint_0_RRT, label="RRT traj")
-
-    axs[1].plot(vel_trapez, label="Trapez traj")
-    axs[1].plot(vel_RRT, label="RRT traj")
-
-    axs[2].plot(acc_trapez, label="Trapez traj")
-    axs[2].plot(acc_RRT, label="RRT traj")
-
-    axs[3].plot(jerk_trapez, label="Trapez traj")
-    axs[3].plot(jerk_RRT, label="RRT traj")
-
-    axs[0].set_ylabel("Position")
-    axs[1].set_ylabel("Velocity")
-    axs[2].set_ylabel("Accelaration")
-    axs[3].set_ylabel("Jerk")
-
-    # plot position of all joints
-    fig, axs1 = plt.subplots(3)
-    fig.suptitle('Trajectory joint profiles of')
+    robot = UR5robot(data=d, model=m)
     joint_name = ["soulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"]
-    for i in range(3):
-        axs1[i].plot(trapez_tra[:,i], label=joint_name[i] + "trapez")
-        axs1[i].set_ylabel("Joint" +str(i) + "Position [rd]")
-        axs1[i].set_xlabel("Time [s]")
-        axs1[i].grid(True)
-        axs1[i].legend()
+    # forward Kinematics computation
+    cartesian_trapez = []
+    cartesian_RRT = []
+    for i in trapez_tra:
+        frame_trapez = robot.robot_ur5.fkine(i).t
+        cartesian_trapez.append(frame_trapez)
+    for j in RRT_tra:
+        frame_rrt = robot.robot_ur5.fkine(j).t
+        cartesian_RRT.append(frame_rrt)
 
-        axs1[i].plot(RRT_tra[:,i], label=joint_name[i] + "RRT")
+    #  converison to plot easily
+    cartesian_RRT = np.array(cartesian_RRT)
+    print("frame_rrt",frame_rrt)
+    print("Diretc kinematics",np.shape(cartesian_RRT), cartesian_RRT[-1])
+    cartesian_trapez = np.array(cartesian_trapez)
+
+    fig, axs = plt.subplots(3)
+    fig.suptitle("Direct Kinematics from both methods for box case")
+    # Z regarding X
+    axs[0].plot(T_tra,cartesian_trapez[:,0], label="Trapez")
+    axs[0].plot(T_RRT,cartesian_RRT[:,0], label="RRT")
+    axs[0].set_ylabel("X Axis [m]")
+    axs[0].set_xlabel("Time [s]")
+    axs[0].grid(True)
+    axs[0].legend()
+
+    # Z regarding Y
+    axs[1].plot(T_tra,cartesian_trapez[:,1], label="Trapez")
+    axs[1].plot(T_RRT,cartesian_RRT[:,1], label="RRT")
+    axs[1].set_ylabel("Y Axis [m]")
+    axs[1].set_xlabel("Time [s]")
+    axs[1].grid(True)
+    axs[1].legend()
+
+    # X regarding Y
+    axs[2].plot(T_tra,cartesian_trapez[:,2], label="Trapez")
+    axs[2].plot(T_RRT,cartesian_RRT[:,2], label="RRT")
+    axs[2].set_ylabel("Z Axis [m]")
+    axs[2].set_xlabel("Time [s]")
+    axs[2].grid(True)
+    axs[2].legend()
+
+    plt.savefig("./media/directkinematics.pdf", format='pdf')
+
+    # Plot  velocity an acceleration
+    
+    size_trapez = np.shape(trapez_tra)[0]
+    size_RRT = np.shape(RRT_tra)[0]
+
+    size_trapez_vel = size_trapez -1
+    size_RRT_vel = size_RRT -1
+
+    vel_trapez = np.ones((size_trapez_vel,6))
+    vel_RRT = np.ones((size_RRT_vel,6))
+
+    size_trapez_acc = size_trapez_vel -1
+    size_RRT_acc = size_RRT_vel -1
+    acc_trapez = np.ones((size_trapez_acc,6))
+    acc_RRT = np.ones((size_RRT_acc,6))
+
+    # create data 
+    for j in range(6):
+        # velocity per joints
+        vel_trapez[:,j] = np.diff(trapez_tra[:,j])
+        vel_RRT[:,j] = np.diff(RRT_tra[:,j])
+        #acceleration per joints
+        acc_trapez[:,j] = np.diff(vel_trapez[:,j])
+        acc_RRT[:,j] = np.diff(vel_RRT[:,j])
+
+    # Velocity plot
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Velocity profile for first joint')
+    for i in range(3):
+        axs[i].plot(T_tra[:size_trapez_vel],vel_trapez[:,i], label=joint_name[i] + "trapez")
+        axs[i].plot(T_RRT[:size_RRT_vel], vel_RRT[:,i],   label=joint_name[i] + "RRT")
+        axs[i].set_ylabel("Joint" +str(i) + "Position [rd]")
+        axs[i].set_xlabel("Time [s]")
+        axs[i].grid(True)
+        axs[i].legend()
+    plt.savefig("./media/joint_velocity1_both.pdf", format='pdf')
+
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Velocity profile for second joint')
+    for i in range(3):
+        axs[i].plot(T_tra[:size_trapez_vel],vel_trapez[:,i+3], label=joint_name[i+3] + "trapez")
+        axs[i].plot(T_RRT[:size_RRT_vel], vel_RRT[:,i+3],   label=joint_name[i+3] + "RRT")
+        axs[i].set_ylabel("Joint" +str(i+3) + "Position [rd]")
+        axs[i].set_xlabel("Time [s]")
+        axs[i].grid(True)
+        axs[i].legend()
+    plt.savefig("./media/joint_velocity2_both.pdf", format='pdf')
+
+    # Acceleration plot 
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Acceleration profile for first joint')
+    for i in range(3):
+        axs[i].plot(T_tra[:size_trapez_acc],acc_trapez[:,i], label=joint_name[i] + "trapez")
+        axs[i].plot(T_RRT[:size_RRT_acc], acc_RRT[:,i],   label=joint_name[i] + "RRT")
+        axs[i].set_ylabel("Joint" +str(i) + "Position [rd]")
+        axs[i].set_xlabel("Time [s]")
+        axs[i].grid(True)
+        axs[i].legend()
+    plt.savefig("./media/joint_acc1_both.pdf", format='pdf')
+
+    fig, axs = plt.subplots(3)
+    fig.suptitle('Acceleration profile for second joint')
+    for i in range(3):
+        axs[i].plot(T_tra[:size_trapez_acc],acc_trapez[:,i+3], label=joint_name[i+3] + "trapez")
+        axs[i].plot(T_RRT[:size_RRT_acc], acc_RRT[:,i+3],   label=joint_name[i+3] + "RRT")
+        axs[i].set_ylabel("Joint" +str(i+3) + "Position [rd]")
+        axs[i].set_xlabel("Time [s]")
+        axs[i].grid(True)
+        axs[i].legend()
+    plt.savefig("./media/joint_acc2_both.pdf", format='pdf')
+    
+    fig, axs1 = plt.subplots(3)
+    fig.suptitle('Trajectory joint profiles for the box of')
+
+    for i in range(3):
+        axs1[i].plot(T_tra,trapez_tra[:,i], label=joint_name[i] + "trapez")
+        axs1[i].plot(T_RRT,RRT_tra[:,i], label=joint_name[i] + "RRT")
         axs1[i].set_ylabel("Joint" +str(i) + "Position [rd]")
         axs1[i].set_xlabel("Time [s]")
         axs1[i].grid(True)
@@ -122,16 +202,11 @@ if __name__ == "__main__":
     fig, axs2 = plt.subplots(3)
     fig.suptitle('Trajectory joint profiles')
     for j in range(3):
-        axs2[j].plot(trapez_tra[:,j+3], label=joint_name[j+3]+ "trapez")
+        axs2[j].plot(T_tra,trapez_tra[:,j+3], label=joint_name[j+3]+ "trapez")
+        axs2[j].plot(T_RRT,RRT_tra[:,j+3], label=joint_name[j+3]+ "RRT")
         axs2[j].set_ylabel("Joint" +str(j+3) + "Position [rd]")
-        axs2[j].grid(True)
         axs2[j].set_xlabel("Time [s]")
-        axs2[j].legend()
-
-        axs2[j].plot(RRT_tra[:,j+3], label=joint_name[j+3]+ "RRT")
-        axs2[j].set_ylabel("Joint" +str(j+3) + "Position [rd]")
         axs2[j].grid(True)
-        axs2[j].set_xlabel("Time [s]")
         axs2[j].legend()
     plt.savefig("./media/joint_trajectory2_both.pdf", format='pdf')
 

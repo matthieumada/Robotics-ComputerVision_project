@@ -11,16 +11,13 @@ from robot import *
 from exercises.display_trajectory import display
 # from wilbert exercise importing class 
 from exercises.exercise_6_sol import StateValidator
-from exercises.exercise_7 import path_prune_simple
+from exercises.exercise_7 import path_prune_simple # to filter the point put increase the likelihood of failure 
 PI = np.pi
 
 """ 
-Build a Point to point Inteprpolator with a trapezoidal velocity
-As adviced, i will select 7 points to inteprolate to fulfill the pick and place task 
 
-The whole template is from Wilbert with the asset folder, main.py, robot.py camp.py)
-All the function used in exercise folder are either from mine or from Wilbert Peter Empleo 
-Of course, I added some change to some  Wilbert's function 
+Build a Rapidly-Exploring random Three. The function are from the exercice 6. except program and drop_object especially one attempt was to filter 
+the point but it increases the likelihood to hit an obstacles. 
 """
 def plan(d, m, start_q, goal_q):
     num_joint = 6
@@ -74,41 +71,20 @@ def plan(d, m, start_q, goal_q):
         return solution_trajectory
 
 
-def pick_object(m, d, name_obj, robot, start_q):
-    obj_frame = get_mjobj_frame(model=m, data=d, obj_name=name_obj) * sm.SE3.Rx(-PI)
-    if name_obj =="box":
-        print("box selected")
-        close_obj_frame = obj_frame * sm.SE3.Tz(-0.2) 
-        goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= start_q)[0]
-    elif name_obj =="t_block":
-        print("tblock selected")
-        goal_q = 0
-    else:
-        print("cylinnder selected")
-        goal_q = 0
-    return obj_frame, close_obj_frame, goal_q
-
-
 def drop_object(m, d, name_obj, robot, opposite_start_q):
     drop_frame = get_mjobj_frame(model=m, data=d, obj_name="zone_drop")* sm.SE3.Rx(-PI) * sm.SE3.Tz(-0.05)
-    if name_obj == "cylinder":
-        print("cylinder_selected")
-
-    else:
-        print("box or t_block dropped")
-        goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0= opposite_start_q)[0]
+    goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0= opposite_start_q)[0]
     return drop_frame, goal_q
 
 
 def program(d,m):
     robot = UR5robot(data=d, model=m)
     # object selection 
-    name_obj = input("Enter the object to manipulate between: cylinder_top, box, t_block:")
+    name_obj = input("Enter the object to manipulate between: cylinder, box, t_block:")
     # # Case when we write wrong the name 
-    if name_obj not in [ "cylinder_top", "box", "t_block"]:
+    if name_obj not in [ "cylinder", "box", "t_block"]:
         raise Exception("Please check the name of object selected") 
     
-    robot = UR5robot(data=d, model=m)
     robot.gripper_value = 0 # gripper
 
     start_q = robot.get_current_q()
@@ -117,7 +93,7 @@ def program(d,m):
     print("TCP", start_frame)
     if name_obj == "box":
         obj_frame = get_mjobj_frame(model=m, data=d, obj_name="box") * sm.SE3.Rx(-PI)
-        print("box selected")
+        
         close_obj_frame = obj_frame * sm.SE3.Tz(-0.2) 
          # go closer 20 cm above to avoid the cylinder
         goal_q = robot.robot_ur5.ik_LM(Tep=close_obj_frame, q0= start_q)[0]
@@ -149,11 +125,10 @@ def program(d,m):
         drop_frame, goal_q = drop_object(m=m, d=d, robot=robot, name_obj=name_obj, opposite_start_q=opposite_start_q)
         trajectory = plan(d=d, m=m, start_q=opposite_start_q, goal_q=goal_q)
         robot.move_j_via(points=trajectory, t=800)
-
+        print("box selected")
         
 
     elif name_obj == "t_block":
-
         obj_frame = get_mjobj_frame(model=m, data=d, obj_name="t_block") * sm.SE3.Rx(-PI) 
         close_frame = obj_frame * sm.SE3.Tz(-0.01) * sm.SE3.Rz(PI/2)
         drop_frame = get_mjobj_frame(model=m, data=d, obj_name="zone_drop") *sm.SE3.Rx(-PI) * sm.SE3.Tz(-0.05)
@@ -179,6 +154,7 @@ def program(d,m):
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame, q0=real_q)[0]
         trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
         robot.move_j_via(points=trajectory, t=800)
+        print("T_block selected")
 
     else:
         obj_frame = get_mjobj_frame(model=m, data=d, obj_name="cylinder") * sm.SE3.Rx(-PI) 
@@ -209,7 +185,7 @@ def program(d,m):
         robot.move_j_via(points=trajectory, t=800)
 
         # grasp it
-        robot.set_gripper(value=255, t=100) 
+        robot.set_gripper(value=250, t=100) 
         real_q = goal_q
 
         # return to start 
@@ -219,14 +195,26 @@ def program(d,m):
         goal_q= start_q + [-2.8300000000000005, 0, 0, 0, 0, 0]
         trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
         robot.move_j_via(points=trajectory, t=800)
-
         real_q = goal_q
         goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame * sm.SE3.Tz(-0.03), q0=real_q)[0]
         trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
         robot.move_j_via(points=trajectory, t=800)
+
+         # cylinder stuck in the gripper 
+        robot.set_gripper(value=120, t=300)
+        robot.set_gripper(value=40, t=300)
+        
+        real_q = goal_q
+        goal_q = robot.robot_ur5.ik_LM(Tep=drop_frame * sm.SE3.Tz(-0.035), q0=real_q)[0]
+        trajectory = plan(d=d, m=m, start_q=real_q, goal_q=goal_q)
+        robot.move_j_via(points=trajectory, t=800)
+        robot.set_gripper(value=0, t=300)
+        robot.set_gripper(value=0, t=300)
+        
+        print("Cylinder selected")
        
     #drop object
-    robot.set_gripper(value=0, t=100)
+    robot.set_gripper(value=0, t=300)
     # return to start
     trajectory = plan(d=d, m=m, start_q=goal_q, goal_q=start_q + [-2.8300000000000005, 0, 0, 0, 0, 0])
     robot.move_j_via(points=trajectory, t=200)
@@ -239,5 +227,6 @@ def program(d,m):
     data = [q_pose for q_pose, _ in robot.queue] # one joint value to plot # data is a list of numpy arrays
     data = np.array(data) 
     display(data=data, name_obj=name_obj, method="RRT")
+    print(robot.queue)
     return robot.queue
        

@@ -1,0 +1,53 @@
+# Computer Vision - Pose estimation implementationn
+
+This project implements appose estimation of a duck from the pointcloud of a scene. 
+
+## 📂 Project Structure
+
+* **`VISIONPROJECT/`**: Main project directory.
+* **`results/`**:  
+* **`graph/`**: As said the results of the function visu1.py and visu2.py will be inside this folder
+* **`Code/`**: The MuJoCo scene file. 
+    * *Note:* `do_pe_bis.py` and `do_pe_bis.py` are two working file for this implementation. The firts one is faster (20s avergae) but provide less accuracy than the second one. I provided both but i mainly use the `do_pe_bis.py` for bette accuarcy. The f
+## 🚀 How to Run
+
+### 1. Launch the Simulation (Robot Arm)
+To start the rpose estimation task:
+
+1.  Navigate to the project folder:
+    ```bash
+    cd VISIONPROJECT
+    ```
+2.  Run the script:
+    ```bash
+    python ./Code/trial_run.py 
+    ```
+    or 
+    ```bash
+    python ./Code/run_all.py 
+    ```
+
+3.  **Interaction:** * One window will open with scene and the object not fitted. 
+    * When you close this window the loading will start in the terminal for ransac and ICP after the ned. A new window with object and scene displayed 
+
+
+### 2. Generate Analysis Figures
+To evaluate the trajectories and generate plots (Position, Velocity, Acceleration, Direct Kinematics):
+
+1.  Run the comparison script:
+    ```bash
+    python ./Code/visu1.py
+    python ./Code/visu2.py
+    ```
+2.  The resulting figures will be saved automatically inside the **`results/`** folder.
+
+## 🛠 Implementation Details
+
+* **Core Logic:** The specific functions for filtering, ICP, Ransac are inside **`Code/`** folder.
+* **Base Template:** The project structure (including `Code/`, `helpers.py`, `settings.py`, `visu1.py`, `visu2.py`, `uncertainty.py`, `trial_run.py`, `run_all.py`) is based on the template provided by Dirk Kraft.
+* **Modifications:** Custom functions were added, and existing functions from the template were modified to suit the specific needs of this assignment.
+
+## 👥 Credits
+
+* Base framework and initial scene assets: **Erik Diniz Costa Lopes Lindby and Dirk Kraft**
+* Modifications and logic implementation: **Matthieu DELIN**
